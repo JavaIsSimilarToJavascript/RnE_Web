@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R&E 연구 총괄 시스템</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="nav-logo">R&E 연구 시스템</h1>
+      <ul class="nav-menu">
+        <li><a href="index.html" class="active">홈</a></li>
+        <li><a href="notes.html">연구 노트</a></li>
+        <li><a href="calendar.html">일정 관리</a></li>
+        <li><a href="papers.html">참고 논문</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <section class="welcome-section">
+        <h2>연구 총괄 대시보드</h2>
+        <p class="subtitle">R&E 연구 활동을 체계적으로 관리하세요</p>
+      </section>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <div class="card-icon">📝</div>
+          <h3>연구 노트</h3>
+          <p>주차별 연구 내용, 결과, 계획을 작성하고 관리합니다.</p>
+          <a href="notes.html" class="card-link">연구 노트 작성 →</a>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-icon">📅</div>
+          <h3>일정 관리</h3>
+          <p>실험 및 연구 일정을 캘린더로 확인하고 관리합니다.</p>
+          <a href="calendar.html" class="card-link">일정 보기 →</a>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-icon">📄</div>
+          <h3>참고 논문</h3>
+          <p>연구에 참고할 논문을 업로드하고 다운로드합니다.</p>
+          <a href="papers.html" class="card-link">논문 보기 →</a>
+        </div>
+      </div>
+
+      <section class="quick-stats">
+        <h3>최근 활동</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">연구 노트</span>
+            <span class="stat-value" id="notes-count">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">예정된 일정</span>
+            <span class="stat-value" id="events-count">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">저장된 논문</span>
+            <span class="stat-value" id="papers-count">0</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    // 통계 업데이트
+    function updateStats() {
+      // 연구 노트 개수
+      const notes = JSON.parse(localStorage.getItem('researchNotes') || '[]');
+      document.getElementById('notes-count').textContent = notes.length;
+
+      // 일정 개수
+      const events = JSON.parse(localStorage.getItem('researchEvents') || '[]');
+      const today = new Date();
+      const upcomingEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate >= today;
+      });
+      document.getElementById('events-count').textContent = upcomingEvents.length;
+
+      // 논문 개수
+      const papers = JSON.parse(localStorage.getItem('researchPapers') || '[]');
+      document.getElementById('papers-count').textContent = papers.length;
+    }
+
+    updateStats();
+  </script>
+</body>
+</html>

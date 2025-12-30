@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일정 관리 - R&E 연구 시스템</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .calendar-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+    }
+
+    .calendar-sidebar {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      height: fit-content;
+    }
+
+    .calendar-main {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .calendar-nav button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .calendar-nav button:hover {
+      background: #f1f5f9;
+    }
+
+    .calendar-month {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      padding: 0.5rem;
+      font-weight: 600;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      position: relative;
+    }
+
+    .calendar-day:hover {
+      background-color: #f8fafc;
+    }
+
+    .calendar-day.other-month {
+      color: #cbd5e1;
+      background-color: #f8fafc;
+    }
+
+    .calendar-day.today {
+      background-color: #dbeafe;
+      border-color: #2563eb;
+    }
+
+    .calendar-day.has-event {
+      background-color: #fef3c7;
+    }
+
+    .calendar-day-number {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .calendar-day-events {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+
+    .event-list {
+      margin-top: 1.5rem;
+    }
+
+    .event-item {
+      padding: 0.75rem;
+      border-left: 3px solid #2563eb;
+      background: #f8fafc;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .event-item:hover {
+      background: #f1f5f9;
+    }
+
+    .event-date {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .event-title {
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    @media (max-width: 968px) {
+      .calendar-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="nav-logo">R&E 연구 시스템</h1>
+      <ul class="nav-menu">
+        <li><a href="index.html">홈</a></li>
+        <li><a href="notes.html">연구 노트</a></li>
+        <li><a href="calendar.html" class="active">일정 관리</a></li>
+        <li><a href="papers.html">참고 논문</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <section class="welcome-section">
+        <h2>일정 관리</h2>
+        <p class="subtitle">실험 및 연구 일정을 캘린더로 관리합니다</p>
+      </section>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3 class="card-title">새 일정 추가</h3>
+        </div>
+        <form id="event-form">
+          <div class="form-group">
+            <label for="event-title">일정 제목 *</label>
+            <input type="text" id="event-title" placeholder="예: 실험 A 진행" required>
+          </div>
+          <div class="form-group">
+            <label for="event-date">날짜 *</label>
+            <input type="date" id="event-date" required>
+          </div>
+          <div class="form-group">
+            <label for="event-description">설명</label>
+            <textarea id="event-description" placeholder="일정에 대한 상세 설명..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">일정 추가</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="calendar-container">
+        <div class="calendar-sidebar">
+          <h3 style="margin-bottom: 1rem;">이번 달 일정</h3>
+          <div id="event-list" class="event-list"></div>
+        </div>
+
+        <div class="calendar-main">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button onclick="changeMonth(-1)">← 이전</button>
+              <span class="calendar-month" id="current-month"></span>
+              <button onclick="changeMonth(1)">다음 →</button>
+            </div>
+            <button class="btn btn-secondary" onclick="goToToday()">오늘</button>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script src="calendar.js"></script>
+</body>
+</html>
+

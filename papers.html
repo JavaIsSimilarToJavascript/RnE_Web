@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>참고 논문 - R&E 연구 시스템</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="nav-logo">R&E 연구 시스템</h1>
+      <ul class="nav-menu">
+        <li><a href="index.html">홈</a></li>
+        <li><a href="notes.html">연구 노트</a></li>
+        <li><a href="calendar.html">일정 관리</a></li>
+        <li><a href="papers.html" class="active">참고 논문</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="container">
+      <section class="welcome-section">
+        <h2>참고 논문</h2>
+        <p class="subtitle">연구에 참고할 논문을 업로드하고 관리합니다</p>
+      </section>
+
+      <!-- 논문 업로드 폼 -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3 class="card-title">새 논문 추가</h3>
+        </div>
+        <form id="paper-form">
+          <div class="form-group">
+            <label for="paper-title">논문 제목 *</label>
+            <input type="text" id="paper-title" placeholder="논문 제목을 입력하세요" required>
+          </div>
+          <div class="form-group">
+            <label for="paper-authors">저자</label>
+            <input type="text" id="paper-authors" placeholder="저자 이름 (쉼표로 구분)">
+          </div>
+          <div class="form-group">
+            <label for="paper-year">발행 연도</label>
+            <input type="number" id="paper-year" placeholder="예: 2024" min="1900" max="2100">
+          </div>
+          <div class="form-group">
+            <label for="paper-journal">저널/학회</label>
+            <input type="text" id="paper-journal" placeholder="저널 또는 학회명">
+          </div>
+          <div class="form-group">
+            <label for="paper-description">설명</label>
+            <textarea id="paper-description" placeholder="논문에 대한 간단한 설명이나 메모..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="paper-file">PDF 파일 업로드</label>
+            <input type="file" id="paper-file" accept=".pdf">
+            <small style="color: #64748b; margin-top: 0.25rem; display: block;">
+              PDF 파일을 선택하면 파일 내용이 저장됩니다 (최대 10MB)
+            </small>
+          </div>
+          <div class="form-group">
+            <label for="paper-url">또는 논문 URL</label>
+            <input type="url" id="paper-url" placeholder="https://...">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">논문 추가</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 논문 목록 -->
+      <div id="papers-list"></div>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script src="papers.js"></script>
+</body>
+</html>
+
