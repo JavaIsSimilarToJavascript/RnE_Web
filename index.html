@@ -70,6 +70,25 @@
   </main>
 
   <script src="common.js"></script>
+
+  <!-- Sync panel: paste Firebase config or load `firebase-config.js` that sets window.FIREBASE_CONFIG -->
+  <section class="container" style="margin-top: 2rem;">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">동기화 설정</h3>
+      </div>
+      <div style="padding: 1rem;">
+        <p style="margin:0 0 .5rem 0; color: #64748b;">Firebase 설정(JSON)을 붙여넣고 <strong>Enable Sync</strong>를 누르세요. 또는 프로젝트 루트에 <code>firebase-config.js</code>를 만들어 <code>window.FIREBASE_CONFIG = {...}</code>를 설정하면 자동으로 인식합니다.</p>
+        <textarea id="firebase-config-input" placeholder="Paste Firebase config JSON here" style="width:100%;height:120px;margin-bottom:.5rem;font-family:monospace;"></textarea>
+        <div>
+          <button id="enable-sync-btn" class="btn btn-primary">Enable Sync</button>
+          <button id="disable-sync-btn" class="btn btn-secondary">Disable Sync</button>
+          <span id="sync-status" style="margin-left:1rem;color:#64748b;">Sync: disabled</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <script>
     // 통계 업데이트
     function updateStats() {
@@ -92,6 +111,57 @@
     }
 
     updateStats();
+
+    // Sync UI handlers
+    (function() {
+      const statusEl = document.getElementById('sync-status');
+      const enableBtn = document.getElementById('enable-sync-btn');
+      const disableBtn = document.getElementById('disable-sync-btn');
+      const input = document.getElementById('firebase-config-input');
+
+      function setStatus(text) { statusEl.textContent = 'Sync: ' + text; }
+
+      enableBtn.addEventListener('click', async () => {
+        let cfg = null;
+        try {
+          const raw = input.value.trim();
+          if (raw) cfg = JSON.parse(raw);
+        } catch (e) {
+          alert('유효한 JSON을 입력하세요.');
+          return;
+        }
+        try {
+          if (cfg) {
+            await window.RandeSync.enable(cfg);
+          } else if (window.FIREBASE_CONFIG) {
+            await window.RandeSync.enable(window.FIREBASE_CONFIG);
+          } else {
+            alert('Firebase config를 붙여넣거나 firebase-config.js를 추가하세요.');
+            return;
+          }
+          setStatus('enabled');
+        } catch (e) {
+          console.error(e);
+          alert('동기화 시작 중 오류가 발생했습니다. 콘솔을 확인하세요.');
+          setStatus('error');
+        }
+      });
+
+      disableBtn.addEventListener('click', () => {
+        window.RandeSync.disable();
+        setStatus('disabled');
+      });
+
+      // Status events from sync manager
+      window.addEventListener('rande:sync-status', (e) => {
+        setStatus(e.detail && e.detail.status ? e.detail.status : 'unknown');
+      });
+
+      // Try auto-init if config exists globally
+      if (window.FIREBASE_CONFIG) {
+        input.value = JSON.stringify(window.FIREBASE_CONFIG, null, 2);
+      }
+    })();
   </script>
 </body>
 </html>

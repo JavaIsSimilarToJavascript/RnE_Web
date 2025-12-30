@@ -154,6 +154,13 @@ function fileToBase64(file) {
 window.downloadPaper = downloadPaper;
 window.deletePaper = deletePaper;
 
+// Re-render when remote updates arrive
+window.addEventListener('rande:updated', (e) => {
+  if (e.detail && e.detail.type === 'papers') {
+    renderPapers();
+  }
+});
+
 // 초기화
 renderPapers();
 

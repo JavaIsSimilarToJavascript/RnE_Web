@@ -166,6 +166,13 @@ window.changeMonth = changeMonth;
 window.goToToday = goToToday;
 window.editEvent = editEvent;
 
+// Re-render when remote updates arrive
+window.addEventListener('rande:updated', (e) => {
+  if (e.detail && e.detail.type === 'events') {
+    renderCalendar();
+  }
+});
+
 // 초기화
 document.getElementById('event-date').value = formatDate(new Date());
 renderCalendar();

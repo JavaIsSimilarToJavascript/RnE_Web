@@ -198,3 +198,10 @@ window.editNote = editNote;
 window.deleteNote = deleteNote;
 window.cancelEdit = cancelEdit;
 
+// Re-render when remote updates arrive
+window.addEventListener('rande:updated', (e) => {
+  if (e.detail && e.detail.type === 'notes') {
+    renderNotes();
+  }
+});
+
